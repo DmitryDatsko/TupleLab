@@ -4,29 +4,24 @@ using TupleLab;
 using TupleLab.ApiDb;
 using TupleLab.PatternMatching;
 
-(bool, string, int, string, string) goodString = ParsingValidation.ParseConnectionString(
+(bool, string, int, string, string) rightString = ParsingValidation.ParseConnectionString(
     "Server=localhost;Port=5432;Database=mydb"
 );
-Console.WriteLine("---- Start ParseConnectionString Method test ----");
-Console.WriteLine($"Is success: {goodString.Item1}");
-Console.WriteLine($"Host: {goodString.Item2}");
-Console.WriteLine($"Port: {goodString.Item3}");
-Console.WriteLine($"Database: {goodString.Item4}");
-Console.WriteLine($"Error message: {goodString.Item5}");
-
+Console.WriteLine("---- Connection String Parser ---");
+Console.WriteLine(
+    $"Success: {rightString.Item1}\nHost: {rightString.Item2}, Port: {rightString.Item3}, Database: {rightString.Item4}"
+);
 Console.WriteLine("*****");
 (bool, string, int, string, string) badString = ParsingValidation.ParseConnectionString(
     string.Empty
 );
-Console.WriteLine($"Is success: {badString.Item1}");
-Console.WriteLine($"Host: {badString.Item2}");
-Console.WriteLine($"Port: {badString.Item3}");
-Console.WriteLine($"Database: {badString.Item4}");
-Console.WriteLine($"Error message: {badString.Item5}");
+Console.WriteLine(
+    $"Success: {badString.Item1}\nHost: {badString.Item2}, Port: {badString.Item3}, Database: {badString.Item4}"
+);
 
-Console.WriteLine("---- Finish ParseConnectionString Method test ----");
+Console.WriteLine();
 
-Console.WriteLine("---- Start ProductService test ----");
+Console.WriteLine("---- Product Search ----");
 var services = new ServiceCollection();
 
 services.AddDbContext<AppDbContext>(options => options.UseSqlite("Data Source=products.db"));
@@ -36,20 +31,18 @@ var provider = services.BuildServiceProvider();
 using var scope = provider.CreateScope();
 
 var productService = scope.ServiceProvider.GetRequiredService<ProductService>();
-var (products, total, filtered, filters, time) = await productService.SearchProductsAsync(
+var (products, totalCount, filteredCount, filters, time) = await productService.SearchProductsAsync(
     "s",
     1.5M,
     null
 );
 
-foreach (var p in products)
-{
-    Console.WriteLine($"Product: {p.Name}");
-}
+Console.WriteLine($"Found {filteredCount} products");
+Console.WriteLine($"Filters: {filters}");
+Console.WriteLine($"Execution time: {time} ms");
 
-Console.WriteLine("---- Finish ProductService test ----");
-
-Console.WriteLine("---- Start AccessControlService test ----");
+Console.WriteLine();
+Console.WriteLine("---- Access Control Service ----");
 
 var admin = AccessControlService.CheckAccess(
     AccessControlService.Role.Admin,
@@ -69,5 +62,3 @@ Console.WriteLine(
 Console.WriteLine(
     $"For user request: HasAccess: {user.HasAccess}, Reason: {user.Reason}, Status code: {user.StatusCode}"
 );
-
-Console.WriteLine("---- Finish AccessControlService test ----");

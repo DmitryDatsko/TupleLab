@@ -59,12 +59,19 @@ dotnet run
 ## Sample Output
 
 ```
----- Connection String Parser ----
+---- Connection String Parser ---
 Success: True
 Host: localhost, Port: 5432, Database: mydb
+*****
+Success: False
+Host: , Port: 0, Database:
 
 ---- Product Search ----
 Found 3 products
-Filters: searchTerm: 'Cheese', minPrice: 5
-Execution time: 12ms
+Filters: searchTerm: s, minPrice: 1.5
+Execution time: 00:00:00.1453665 ms
+
+---- Access Control Service ----
+For admin request: HasAccess: True, Reason: You're Admin, Status code: 200
+For user request: HasAccess: False, Reason: You're User, Status code: 403
 ```
